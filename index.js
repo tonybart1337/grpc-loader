@@ -3,7 +3,6 @@ const os = require('os');
 const fs = require('fs');
 const path = require('path');
 const rimraf = Promise.promisify(require('rimraf'));
-const grpc = require('grpc');
 const protobuf = require('protobufjs');
 const loaderUtils = require('loader-utils');
 
