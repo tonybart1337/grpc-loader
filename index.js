@@ -25,7 +25,7 @@ function getGeneratedFile(srcPath, dir, cb) {
   return fs.readFile(grpcFilePath, 'utf8', (err, data) => {
     if (err) return cb(err);
 
-    return cb(null, protocFilePath, data);
+    return cb(null, protocFilePath, grpcFilePath, data);
   });
 }
 
@@ -37,42 +37,55 @@ function removeTmpDir(dir, cb) {
   return rimraf(dir, cb);
 }
 
-function processProto(dir, cb) {
-  console.log(dir);
-  execFile(
-    protoc,
-    [
-    `--proto_path=${path.dirname(this.resourcePath)}`,
-    `--js_out=import_style=commonjs,binary:${dir}`,
-    `--grpc_out=${dir}`,
-    `--plugin=protoc-gen-grpc=${protocGrpcPlugin}`,
-    this.resourcePath,
-    ],
-    { encoding: 'utf8' },
-    (error, stdout, stderr) => {
-      if (error) return removeTmpDir(dir, () => cb(error));
-      if(stderr) console.error(stderr);
-
-      getGeneratedFile(this.resourcePath, dir, (error, protocFilePath, value) => {
-      	  if (error) return removeTmpDir(dir, () => cb(error));
-
-          const protocFileName = path.basename(protocFilePath, '.js');
-          let result = value.replace(`require('./${protocFileName}.js');`, `require('${protocFilePath.replace(/\\/g, '\/')}');`);
-
-          // removeTmpDir(dir, noop);
-          cb(null, result);
-      });
-  });
+function generateOutput(protocFilePath, grpcFilePath) {
+  return `
+      exports.services = require('!!${grpcFilePath}');
+      exports.messages = require('!!${protocFilePath}');
+  `;
 }
 
-module.exports = function (source) {
-	if (this.cacheable) this.cacheable();
+function processProto(dir, cb) {
+  execFile(
+    protoc, [
+      `--proto_path=${path.dirname(this.resourcePath)}`,
+      `--js_out=import_style=commonjs,binary:${dir}`,
+      `--grpc_out=${dir}`,
+      `--plugin=protoc-gen-grpc=${protocGrpcPlugin}`,
+      this.resourcePath,
+    ], {
+      encoding: 'utf8'
+    },
+    (error, stdout, stderr) => {
+      if (error) return removeTmpDir(dir, () => cb(error));
+      if (stderr) this.emitError(stderr);
 
-    const callback = this.async();
-	
-	createTmpDir((error, dir) => {
-      if (error) return callback(error);
+      getGeneratedFile(this.resourcePath, dir, (error, protocFilePath, grpcFilePath, value) => {
+        if (error) return removeTmpDir(dir, () => cb(error));
 
-      processProto.call(this, dir, callback);
-	});
+        const protocFileName = path.basename(protocFilePath, '.js');
+
+        // don't process the result
+        const grpcFileContent = value.replace(`require('./${protocFileName}.js');`, `require('!!${protocFilePath.replace(/\\/g, '\/')}');`);
+
+        fs.writeFile(grpcFilePath, grpcFileContent, (error) => {
+          if (error) return removeTmpDir(dir, () => cb(error));
+
+          const result = generateOutput(protocFilePath, grpcFilePath);
+          // removeTmpDir(dir, noop);
+          cb(null, result);
+        });
+      });
+    });
+}
+
+module.exports = function(source) {
+  if (this.cacheable) this.cacheable();
+
+  const callback = this.async();
+
+  createTmpDir((error, dir) => {
+    if (error) return callback(error);
+
+    processProto.call(this, dir, callback);
+  });
 };

@@ -10,7 +10,22 @@ module.exports = {
 		filename: 'index.js'
 	},
 	module: {
-		loaders: [
+		rules: [
+		    {
+				test: /\.js$/,
+				use: {
+				  loader: 'babel-loader',
+				  options: {
+				  	presets: [
+                      ['env', {
+                        targets: {
+                          node: 'current',
+                        },
+                      }],
+                    ],
+				  }
+			    }
+			},
 			{
 				test: /\.proto$/,
 				loader: path.join(__dirname, "..")
