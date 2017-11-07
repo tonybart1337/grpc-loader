@@ -33,8 +33,11 @@
     "start": "node test/out"
   },
   "dependencies": {
+    "bluebird": "^3.5.0",
+    "grpc": "^1.0.0",
     "grpc-tools": "^1.0.0",
     "loader-utils": "^1.0.0",
+    "protobufjs": "~6.8.0",
     "rimraf": "^2.0.0"
   },
   "devDependencies": {
@@ -42,7 +45,6 @@
     "babel-loader": "^7.1.0",
     "babel-preset-env": "^1.6.0",
     "google-protobuf": "^3.0.0",
-    "grpc": "^1.0.0",
     "webpack": "^3.0.0",
     "webpack-node-externals": "^1.0.0"
   },
@@ -50,5 +52,8 @@
     "google-protobuf": "^3.0.0",
     "grpc": "^1.0.0",
     "webpack": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=8.0.0"
   }
 }
