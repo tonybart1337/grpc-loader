@@ -39,10 +39,10 @@
   "devDependencies": {
     "google-protobuf": "^3.0.0",
     "grpc": "^1.0.0",
+    "grpc-tools": "^1.0.0",
     "webpack-node-externals": "^1.0.0"
   },
   "peerDependencies": {
-    "grpc-tools": "^1.0.0",
     "webpack": "^3.0.0"
   }
 }
