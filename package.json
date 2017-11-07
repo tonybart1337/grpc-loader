@@ -1,6 +1,6 @@
 {
   "name": "grpc-loader",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "gRPC loader module for webpack",
   "main": "index.js",
   "keywords": [
