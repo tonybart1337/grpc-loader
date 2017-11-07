@@ -91,7 +91,7 @@ module.exports = {
     rules: [
       {
         test: /\.proto$/,
-        loader: path.join(__dirname, ".."),
+        loader: 'grpc-loader',
         options: {
           // both methods are static internally
           // but result api differs
