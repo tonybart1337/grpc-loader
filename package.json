@@ -1,6 +1,6 @@
 {
   "name": "grpc-loader",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "gRPC loader module for webpack",
   "main": "index.js",
   "keywords": [
@@ -43,9 +43,12 @@
     "babel-preset-env": "^1.6.0",
     "google-protobuf": "^3.0.0",
     "grpc": "^1.0.0",
+    "webpack": "^3.0.0",
     "webpack-node-externals": "^1.0.0"
   },
   "peerDependencies": {
+    "google-protobuf": "^3.0.0",
+    "grpc": "^1.0.0",
     "webpack": "^3.0.0"
   }
 }
